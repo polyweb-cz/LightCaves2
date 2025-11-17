@@ -67,13 +67,14 @@ export class LightEngine {
 
   /**
    * Vrací zrcadlo na dané pozici (z mapy)
+   * Zrcadla: "/" a "╲"
    */
   getMirrorAt(x, y) {
     if (y < 0 || y >= this.level.height || x < 0 || x >= this.level.width) {
       return null;
     }
     const cell = this.level.map[y][x];
-    if (cell === "/" || cell === "\\") {
+    if (cell === "/" || cell === "╲") {
       return { x, y, type: cell };
     }
     return null;
@@ -83,7 +84,7 @@ export class LightEngine {
    * Odraží paprsek podle typu zrcadla
    * Typ `/`:
    *   left → up, up → left, right → down, down → right
-   * Typ `\`:
+   * Typ `╲`:
    *   left → down, up → right, right → up, down → left
    */
   reflectRay(direction, mirrorType) {
@@ -94,7 +95,7 @@ export class LightEngine {
         right: "down",
         down: "right"
       },
-      "\\": {
+      "╲": {
         left: "down",
         up: "right",
         right: "up",
@@ -117,7 +118,7 @@ export class LightEngine {
     // Kontrola zdí v mapě
     const cell = this.level.map[y][x];
     // Baterka a cíl se taky počítají jako volný prostor (speciální symboly)
-    const specialSymbols = ["→", "←", "↑", "↓", ">", "<", "^", "v", "/", "\\"];
+    const specialSymbols = ["→", "←", "↑", "↓", ">", "<", "^", "v", "/", "╲"];
     return cell === "." || cell === " " || specialSymbols.includes(cell);
   }
 

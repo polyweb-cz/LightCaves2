@@ -129,13 +129,14 @@ export class Game {
 
   /**
    * Spočítej počet umístěných zrcadel v mapě
+   * Zrcadla: "/" a "╲"
    */
   countPlacedMirrors() {
     let count = 0;
     for (let y = 0; y < this.level.height; y++) {
       for (let x = 0; x < this.level.width; x++) {
         const cell = this.level.map[y][x];
-        if (cell === "/" || cell === "\\") count++;
+        if (cell === "/" || cell === "╲") count++;
       }
     }
     return count;
@@ -143,10 +144,11 @@ export class Game {
 
   /**
    * Testovací metoda - přidej zrcadlo dynamicky
+   * Typy: "/" nebo "╲"
    */
   addMirror(x, y, type) {
-    if (!["\\", "/"].includes(type)) {
-      console.warn("Neplatný typ zrcadla! Použij '/' nebo '\\'");
+    if (!["╲", "/"].includes(type)) {
+      console.warn("Neplatný typ zrcadla! Použij '/' nebo '╲'");
       return;
     }
 
@@ -193,7 +195,7 @@ export class Game {
     }
 
     const cell = this.level.map[y][x];
-    if (cell !== "/" && cell !== "\\") {
+    if (cell !== "/" && cell !== "╲") {
       console.warn("Na této pozici není zrcadlo!");
       return;
     }

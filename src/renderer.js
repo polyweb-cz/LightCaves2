@@ -169,13 +169,14 @@ export class Renderer {
 
   /**
    * Vykreslí zrcadla (z mapy)
+   * Zrcadla: "/" a "╲"
    */
   renderMirrors() {
     for (let y = 0; y < this.level.height; y++) {
       for (let x = 0; x < this.level.width; x++) {
         const cell = this.level.map[y][x];
 
-        if (cell !== "/" && cell !== "\\") continue; // Jen zrcadla
+        if (cell !== "/" && cell !== "╲") continue; // Jen zrcadla
 
         this.ctx.fillStyle = "#ff6666";
         this.ctx.font = "bold 20px Arial";
@@ -237,7 +238,7 @@ export class Renderer {
     for (let y = 0; y < this.level.height; y++) {
       for (let x = 0; x < this.level.width; x++) {
         const cell = this.level.map[y][x];
-        if (cell === "/" || cell === "\\") placedCount++;
+        if (cell === "/" || cell === "╲") placedCount++;
       }
     }
 
@@ -257,7 +258,7 @@ export class Renderer {
     // Legenda
     this.ctx.fillStyle = "#aaa";
     this.ctx.font = "12px Arial";
-    this.ctx.fillText("█ = Zeď  U = Cíl  ↑↓←→ = Baterka  / \\ = Zrcadlo", 10, this.canvas.height - 20);
+    this.ctx.fillText("█ = Zeď  U = Cíl  ↑↓←→ = Baterka  / ╲ = Zrcadlo", 10, this.canvas.height - 20);
   }
 
   /**

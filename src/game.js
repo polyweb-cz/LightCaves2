@@ -78,7 +78,9 @@ export class Game {
     console.log("Inicializuji Light Caves - Demo");
     console.log("Level:", this.level.name);
     console.log("Mapa velikost:", `${this.level.width}x${this.level.height}`);
-    console.log("Dostupná zrcadla:", this.level.mirrors.available);
+    console.log("Dostupná zrcadla:", this.level.objects.mirrors.available);
+    console.log("Baterka:", this.level.flashlight);
+    console.log("Cíl:", this.level.goal);
 
     // Prvotní rendr
     this.update();
@@ -126,20 +128,55 @@ export class Game {
   }
 
   /**
+   * Spočítej počet umístěných zrcadel v mapě
+   */
+  countPlacedMirrors() {
+    let count = 0;
+    for (let y = 0; y < this.level.height; y++) {
+      for (let x = 0; x < this.level.width; x++) {
+        const cell = this.level.map[y][x];
+        if (cell === "/" || cell === "\\") count++;
+      }
+    }
+    return count;
+  }
+
+  /**
    * Testovací metoda - přidej zrcadlo dynamicky
    */
   addMirror(x, y, type) {
-    if (!this.level.mirrors.placed) {
-      this.level.mirrors.placed = [];
-    }
-
-    const available = this.level.mirrors.available - this.level.mirrors.placed.length;
-    if (available <= 0) {
-      console.warn("Žádná dostupná zrcadla!");
+    if (!["\\", "/"].includes(type)) {
+      console.warn("Neplatný typ zrcadla! Použij '/' nebo '\\'");
       return;
     }
 
-    this.level.mirrors.placed.push({ x, y, type });
+    const placed = this.countPlacedMirrors();
+    const available = this.level.objects.mirrors.available;
+
+    if (placed >= available) {
+      console.warn(`Maximální počet zrcadel dosažen (${available})!`);
+      return;
+    }
+
+    // Kontrola hranic
+    if (x < 0 || x >= this.level.width || y < 0 || y >= this.level.height) {
+      console.warn("Pozice mimo mapu!");
+      return;
+    }
+
+    // Nelze umístit na zeď, baterku nebo cíl
+    const cell = this.level.map[y][x];
+    if (cell === "█" || cell === "→" || cell === "←" || cell === "↑" || cell === "↓" ||
+        cell === ">" || cell === "<" || cell === "^" || cell === "v") {
+      console.warn("Nemůžeš umístit zrcadlo na zeď, baterku nebo cíl!");
+      return;
+    }
+
+    // Umístit zrcadlo do mapy
+    const mapArray = this.level.map.map(row => row.split(''));
+    mapArray[y][x] = type;
+    this.level.map = mapArray.map(row => row.join(''));
+
     this.lightEngine = new LightEngine(this.level);
     this.update();
     console.log(`Zrcadlo ${type} přidáno na [${x},${y}]`);
@@ -149,14 +186,26 @@ export class Game {
    * Testovací metoda - odeber zrcadlo
    */
   removeMirror(x, y) {
-    if (this.level.mirrors.placed) {
-      this.level.mirrors.placed = this.level.mirrors.placed.filter(
-        m => !(m.x === x && m.y === y)
-      );
-      this.lightEngine = new LightEngine(this.level);
-      this.update();
-      console.log(`Zrcadlo odebráno z [${x},${y}]`);
+    // Kontrola hranic
+    if (x < 0 || x >= this.level.width || y < 0 || y >= this.level.height) {
+      console.warn("Pozice mimo mapu!");
+      return;
     }
+
+    const cell = this.level.map[y][x];
+    if (cell !== "/" && cell !== "\\") {
+      console.warn("Na této pozici není zrcadlo!");
+      return;
+    }
+
+    // Odstranit zrcadlo z mapy
+    const mapArray = this.level.map.map(row => row.split(''));
+    mapArray[y][x] = ".";
+    this.level.map = mapArray.map(row => row.join(''));
+
+    this.lightEngine = new LightEngine(this.level);
+    this.update();
+    console.log(`Zrcadlo odebráno z [${x},${y}]`);
   }
 
   /**

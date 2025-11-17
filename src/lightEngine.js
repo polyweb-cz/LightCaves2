@@ -66,11 +66,17 @@ export class LightEngine {
   }
 
   /**
-   * Vrací zrcadlo na dané pozici (z placed mirrors)
+   * Vrací zrcadlo na dané pozici (z mapy)
    */
   getMirrorAt(x, y) {
-    if (!this.level.mirrors.placed) return null;
-    return this.level.mirrors.placed.find(m => m.x === x && m.y === y);
+    if (y < 0 || y >= this.level.height || x < 0 || x >= this.level.width) {
+      return null;
+    }
+    const cell = this.level.map[y][x];
+    if (cell === "/" || cell === "\\") {
+      return { x, y, type: cell };
+    }
+    return null;
   }
 
   /**

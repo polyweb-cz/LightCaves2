@@ -168,21 +168,25 @@ export class Renderer {
   }
 
   /**
-   * Vykreslí zrcadla
+   * Vykreslí zrcadla (z mapy)
    */
   renderMirrors() {
-    if (!this.level.mirrors.placed) return;
+    for (let y = 0; y < this.level.height; y++) {
+      for (let x = 0; x < this.level.width; x++) {
+        const cell = this.level.map[y][x];
 
-    for (const mirror of this.level.mirrors.placed) {
-      this.ctx.fillStyle = "#ff6666";
-      this.ctx.font = "bold 20px Arial";
-      this.ctx.textAlign = "center";
-      this.ctx.textBaseline = "middle";
+        if (cell !== "/" && cell !== "\\") continue; // Jen zrcadla
 
-      const x = mirror.x * this.cellSize + this.cellSize / 2;
-      const y = mirror.y * this.cellSize + this.cellSize / 2;
+        this.ctx.fillStyle = "#ff6666";
+        this.ctx.font = "bold 20px Arial";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
 
-      this.ctx.fillText(mirror.type, x, y);
+        const x_px = x * this.cellSize + this.cellSize / 2;
+        const y_px = y * this.cellSize + this.cellSize / 2;
+
+        this.ctx.fillText(cell, x_px, y_px);
+      }
     }
   }
 
@@ -228,6 +232,15 @@ export class Renderer {
    * Vykreslí HUD (počet zrcadel, jméno levelu)
    */
   renderHUD() {
+    // Spočítej zrcadla v mapě
+    let placedCount = 0;
+    for (let y = 0; y < this.level.height; y++) {
+      for (let x = 0; x < this.level.width; x++) {
+        const cell = this.level.map[y][x];
+        if (cell === "/" || cell === "\\") placedCount++;
+      }
+    }
+
     this.ctx.fillStyle = "#fff";
     this.ctx.font = "14px Arial";
     this.ctx.textAlign = "left";
@@ -237,9 +250,9 @@ export class Renderer {
     this.ctx.fillText(`Level: ${this.level.name}`, 10, 10);
 
     // Počet dostupných zrcadel
-    const placedCount = (this.level.mirrors.placed || []).length;
-    const availableCount = this.level.mirrors.available - placedCount;
-    this.ctx.fillText(`Zrcadla: ${availableCount}/${this.level.mirrors.available}`, 10, 30);
+    const availableCount = this.level.objects.mirrors.available;
+    const remainingCount = availableCount - placedCount;
+    this.ctx.fillText(`Zrcadla: ${remainingCount}/${availableCount} (umístěno: ${placedCount})`, 10, 30);
 
     // Legenda
     this.ctx.fillStyle = "#aaa";

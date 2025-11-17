@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Light Caves - Ultraminimální Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0a0a0a;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    .game-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #ffff00;
+      text-shadow: 0 0 10px #ffff00;
+      margin-bottom: 10px;
+    }
+
+    #gameCanvas {
+      border: 3px solid #ffff00;
+      background-color: #1a1a1a;
+      box-shadow: 0 0 20px rgba(255, 255, 0, 0.3);
+      display: block;
+    }
+
+    .legend {
+      background-color: #1a1a1a;
+      border: 1px solid #444;
+      padding: 15px;
+      border-radius: 5px;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .legend h3 {
+      color: #ffff00;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+
+    .legend-symbol {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #444;
+      background-color: #0a0a0a;
+    }
+
+    .controls {
+      background-color: #1a1a1a;
+      border: 1px solid #444;
+      padding: 15px;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    .controls h3 {
+      color: #ffff00;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #aaa;
+      font-size: 11px;
+    }
+
+    button {
+      background-color: #0088ff;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      margin: 5px 5px 5px 0;
+      border-radius: 3px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #0066cc;
+    }
+
+    button.secondary {
+      background-color: #ff6666;
+    }
+
+    button.secondary:hover {
+      background-color: #ff4444;
+    }
+
+    input {
+      background-color: #0a0a0a;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 5px;
+      border-radius: 3px;
+      width: 60px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+    }
+
+    .info {
+      background-color: #0a2a0a;
+      border-left: 3px solid #0f0;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 11px;
+      line-height: 1.6;
+      border-radius: 3px;
+    }
+
+    .info code {
+      background-color: #0a0a0a;
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="game-section">
+      <div>
+        <h1>🎮 Light Caves - Demo</h1>
+        <canvas id="gameCanvas"></canvas>
+      </div>
+
+      <div class="legend">
+        <h3>Legenda</h3>
+        <div class="legend-item">
+          <div class="legend-symbol" style="background-color: #4488ff;">█</div>
+          <span>= Odkrytá zeď (viditelná)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-symbol" style="color: #0088ff; font-size: 14px;">⬤</div>
+          <span>= Baterka (zdroj světla)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-symbol" style="color: #ffff00;">—</div>
+          <span>= Paprsek světla (žlutý)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-symbol" style="color: #ff6666; font-size: 16px;">/</div>
+          <span>= Zrcadlo typu `/`</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-symbol" style="color: #00ff00; font-size: 16px;">U</div>
+          <span>= Cíl (musí být osvětlen)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <h3>🎮 Ovládání (v konzoli)</h3>
+
+      <div class="control-group">
+        <label>Rotace baterky:</label>
+        <button onclick="game.rotateFlashlight('up')">↑ Nahoru</button>
+        <button onclick="game.rotateFlashlight('down')">↓ Dolů</button><br>
+        <button onclick="game.rotateFlashlight('left')">← Doleva</button>
+        <button onclick="game.rotateFlashlight('right')">→ Doprava</button>
+      </div>
+
+      <div class="control-group">
+        <label>Přidaj zrcadlo (X, Y, Typ):</label><br>
+        <input id="mirrorX" type="number" value="6" placeholder="X">
+        <input id="mirrorY" type="number" value="2" placeholder="Y">
+        <select id="mirrorType" style="background-color: #0a0a0a; color: #0f0; border: 1px solid #0f0; padding: 5px; border-radius: 3px; width: auto;">
+          <option value="/">/</option>
+          <option value="\\">\</option>
+        </select>
+        <button onclick="addMirrorFromUI()">Přidat zrcadlo</button>
+      </div>
+
+      <div class="control-group">
+        <label>Odeber zrcadlo (X, Y):</label><br>
+        <input id="removeX" type="number" value="6" placeholder="X">
+        <input id="removeY" type="number" value="2" placeholder="Y">
+        <button class="secondary" onclick="removeMirrorFromUI()">Odeber</button>
+      </div>
+
+      <div class="info">
+        <strong>💡 Tipy:</strong><br>
+        • Otáčej baterkou aby ses orientoval v jeskyni<br>
+        • Přidávaj zrcadla aby si cestu<br>
+        • Paprsek se odráží od zrcadel<br>
+        • Jednou viditelné zdi zůstávají vidět
+      </div>
+
+      <div class="info" style="background-color: #2a0a0a; border-left-color: #ff6666;">
+        <strong>🐛 Debug:</strong><br>
+        Otevři konzoli (F12) a používej:<br>
+        <code>game.addMirror(x, y, "/")</code><br>
+        <code>game.removeMirror(x, y)</code><br>
+        <code>game.rotateFlashlight("dir")</code>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="src/game.js"></script>
+
+  <script>
+    function addMirrorFromUI() {
+      const x = parseInt(document.getElementById("mirrorX").value);
+      const y = parseInt(document.getElementById("mirrorY").value);
+      const type = document.getElementById("mirrorType").value;
+
+      if (isNaN(x) || isNaN(y)) {
+        alert("Vlož validní X a Y souřadnice!");
+        return;
+      }
+
+      game.addMirror(x, y, type);
+    }
+
+    function removeMirrorFromUI() {
+      const x = parseInt(document.getElementById("removeX").value);
+      const y = parseInt(document.getElementById("removeY").value);
+
+      if (isNaN(x) || isNaN(y)) {
+        alert("Vlož validní X a Y souřadnice!");
+        return;
+      }
+
+      game.removeMirror(x, y);
+    }
+  </script>
+</body>
+</html>

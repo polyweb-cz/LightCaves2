@@ -33,7 +33,7 @@ export const level1_1 = {
   //           v = otevírá se dolů (paprsek musí přijít shora)
   map: [
     "███████████████",
-    "█.............█",
+    "█→............█",
     "█.█████.......█",
     "█.█...█.......█",
     "█.█.█.█.......█",
@@ -45,13 +45,7 @@ export const level1_1 = {
     "█.......█.█.█.█",
     "█.......█.█...█",
     "█.........█████",
-    "█.........<...█",
+    "█.........>...█",
     "███████████████"
-  ],
-
-  // Pozice baterky a její směr - bude se parsovat z mapy
-  flashlightPosition: { x: 2, y: 2, direction: "→" },
-
-  // Pozice cíle - bude se parsovat z mapy
-  goalPosition: { x: 12, y: 13, direction: "<" }  // otevírá se doleva
+  ]
 };

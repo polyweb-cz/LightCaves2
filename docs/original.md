@@ -68,7 +68,10 @@ Hra inspirovaná dětskou hrou na čtverečkovaném papíře ze školy. Hráč m
 ┌   = Zalomení světla (paprsek zleva/zdola)
 /   = Zrcadlo typ 1
 \   = Zrcadlo typ 2
-U   = Cíl (různé rotace)
+> = cil - otevírá se doprava (paprsek musí přijít zleva)
+< = cil - otevírá se doleva (paprsek musí přijít zprava)
+^ = cil - otevírá se nahoru (paprsek musí přijít zdola)
+v = cil - otevírá se dolů (paprsek musí přijít shora)
 ↑   = Baterka směr nahoru
 ↓   = Baterka směr dolů
 ←   = Baterka směr doleva
